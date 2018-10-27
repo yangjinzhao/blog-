@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block zuo %}
+    <div class="l_box f_l">
+    <div class="postdate">
+      <div class="month"></div>
+      <div class="date"></div>
+    </div>
+    <div class="title">
+        <h2><a href="#" rel="bookmark" >{{ article.title }}</a></h2>
+        <div class="postmeta">
+          <span class="postmeta_author">{{ article.author.username }}</span>
+          <span class="postmeta_category"><a href="" rel="category">{{ article.category.name }}</a></span>
+          <span class="postmeta_time">{{ article.add_time }}</span>
+          <span style="color: hotpink;cursor:pointer" id="clicklove">点赞</span>
+          <span id="lovenum">{{ article.love_num }}</span>
+        </div><!-- end postmeta -->
+        <div class="entry">
+     {{ article.content }}
+        </div>
+        <span class="tags">
+           {% for articletag in article.articletag_set.all %}
+            <a href="" rel="tag">t{{ articletag.tag.name }}</a>
+          {% endfor %}
+        </span>
+
+
+      <div class="commentstitle"><span class="trackback"><a href="http://www.baidu.org/wp-trackback.php?p=542" rel="trackback" title="Trackback URI"></a>
+      </span><h3 id="comments"><span class="commentsnumber">评论数{{  article.comment_num  }}</span> </h3></div>
+
+      <ol class="commentlist">
+          {% for commentinfo in article.commentinfo_set.all %}
+              <li class="alt" id="comment-59418">
+                <div class="top">
+                    <a href='' rel='external nofollow' class='url'>{{ commentinfo.comment_person  }}</a>
+                    <span class="time">
+                        @ <a href="#comment-59418" title="">{{ commentinfo.add_time }}</a>
+                    </span>
+                </div>
+                <div>
+                    <img alt='' src='{% static 'images/default.jpg' %}' class='avatar avatar-32 photo' height='32' width='32' />
+                </div>
+
+                <div class="body">
+                                <p>{{ commentinfo.comment_content}}</p>
+                </div>
+              </li>
+              {% empty %}
+              <li class="alt" id="comment-59418">还没有任何评论,赶紧抢沙发！</li>
+         {% endfor %}
+
+
+
+
+      </ol>
+
+    <div id="commentform">
+    <h3 id="respond">发表评论:</h3>
+
+    <form action="{% url 'articles:add_comment' article.id %}" method="post" id="commentform">
+        {% csrf_token %}
+    <p><textarea name="comment" id="comment" cols="25" rows="5" tabindex="4" class="message_input" ></textarea></p>
+    <p>
+        <input name="submit" type="submit" id="submit" tabindex="5" value="提交评论" class="button" />
+    </p>
+    </form>
+    </div>
+    </div>
+
+  </div>
+{% endblock zuo %}
+
+{% block myjs %}
+    <script>
+   $('#clicklove').click(function () {
+    {#    $.get('{% url 'articles:add_love' %}',{articleid: {{ article.id }}},function(callback){#}
+    {#        if (callback.status =='ok'){#}
+    {#          var num= parseInt($('#lovenum').text())+1#}
+    {#            $('#lovenum').text(num)#}
+    {#        }#}
+    {#        else{#}
+    {#            alert(callback.msg)#}
+    {#        }#}
+
+    {#$.post('{% url 'articles:add_love' %}',{articleid: {{ article.id }},csrfmiddlewaretoken: '{{csrf_token}}'},#}
+    {#   function (callback) {#}
+    {#       if (callback.status == 'ok') {#}
+    {#           var num = parseInt($('#lovenum').text()) + 1#}
+    {#           $('#lovenum').text(num)#}
+    {#       }#}
+    {#       else {#}
+    {#           alert(callback.msg)#}
+    {#       }#}
+    {#   })#}
+
+    $.ajax({
+        type:'POST',
+        url: '{% url 'articles:add_love'%}',
+        data:{
+            articleid:{{ article.id }},
+            csrfmiddlewaretoken: '{{csrf_token}}'
+        },
+        success:function (callback) {
+            if (callback.status == 'ok') {
+                var num = parseInt($('#lovenum').text()) + 1
+                $('#lovenum').text(num)
+            }
+            else {
+                alert(callback.msg)
+            }
+        },
+    })
+   })
+
+    </script>
+{% endblock myjs %}

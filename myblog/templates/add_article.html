@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block zuo %}
+<div style="font-size: 40px">
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+    {{ article_form.as_p }}
+
+        <input type="submit" value="发表文章">
+        <div>
+            {% for k,err in article_form.errors.items %}
+            {{ err }}
+            {% endfor %}
+
+        </div>
+    </form></div>
+{% endblock %}
